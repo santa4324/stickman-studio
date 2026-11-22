@@ -1,0 +1,9 @@
+# The core pipeline (sync.py, report.py) uses the Python standard library
+# only. Nothing to install.
+
+# Optional -- only needed for enrich.py (transcripts + storyboard frames).
+# You also need the ffmpeg/ffprobe binaries on PATH:
+#   macOS:  brew install ffmpeg
+#   Ubuntu: sudo apt install ffmpeg
+yt-dlp
+faster-whisper

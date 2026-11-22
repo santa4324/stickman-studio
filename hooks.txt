@@ -1,0 +1,97 @@
+# Hook bank -- one hook per line, rendered by:
+#   python3 make_reel.py --variants hooks.txt --clip random --seconds 8 --out-dir out/batch
+#
+#   --clip random (or any folder) deals a DIFFERENT clip to every hook, so no two
+#   Reels share footage. Pass one file only when you deliberately want to A/B
+#   three hooks on the same background.
+#
+# Rules taken from your own metrics (data/report.md):
+#   - 2-3 lines on screen. Never four.
+#   - Put the viewer inside the situation. "me ..." and "POV: ..." hooks ran
+#     28-57% skip; every product statement ran 65-80%.
+#   - Do not open with the product name. Earn the first three seconds, then
+#     mention StackShield in the caption.
+#   - One idea per Reel. The 16-view Reel stacked three messages on one screen.
+#
+# Post a few, one per day, each with its own footage, then let sync.py +
+# report.py + learn.py tell you which earned the shares.
+#
+# The ask ("comment ...", "save this") is not in this file: make_reel.py draws
+# one at the bottom of the frame and caption.py writes the caption pack, so each
+# hook stays a single idea. Pick the ask type per Reel, not per line.
+
+# --- "me ___" : your highest-retention shape ---
+me checking for leaked secrets before real users arrive so launch day doesn't humble me
+me reading my own frontend bundle and finding my entire database
+me realising my Supabase anon key shipped in the last forty builds
+me at 2am checking whether anyone can read my users table
+me explaining why the vibe-coded app needs one scan before I spend a cent on ads
+me finding out "4 of 11 apps had RLS off" and mine is one of them
+
+# --- "POV:" : your lowest-skip single Reel (28%) ---
+POV: you asked if your app was safe before launch instead of after the breach
+POV: your app is ready and someone just showed you your own data, no login
+POV: the scan printed your users' names and GPS coordinates from a public row
+POV: you shipped in a weekend and the security review is happening right now
+
+# --- reveal : your highest save rate (14.1 saves per 1k) ---
+I found a real user's name and exact GPS coordinates. No login. No credentials.
+Your Supabase anon key gives anyone SELECT access to your users table. Right now.
+That "working" app was one REST call away from printing every row it owns
+
+# --- cost of skipping it ---
+every vibe-coded app I test has the same hole and nobody notices until launch
+four minutes of checking would have caught what took them six weeks to find
+
+# --- recognition + free tips, Nov 2026 -------------------------
+# Rewritten after the first batch. The test now is not "is this clear" but
+# "does a builder say 'oh yeah, that's me' before they know what we sell".
+# Three kinds: the thing everyone does (and nobody admits), the free check you
+# can run tonight, and the receipt from an app we already looked at.
+#
+# No product name, no "try for free", no explaining the SaaS. The caption and
+# first comment carry the tip; the hook only has to win the first 3 seconds.
+#
+# Free checks -- value first, tool second. These should read like a friend
+# sending you a shortcut, not a vendor dangling a trial:
+free: open devtools and read your own network tab
+free: revoke the key the AI put in your repo tonight
+free: check one table. if RLS is off, nothing else matters
+free: NEXT_PUBLIC_ means public. that's the whole name
+free: your privacy policy needs a template, not a lawyer
+free: attorney-drafted privacy policies, free to copy
+free: the cookie banner promises a policy you don't have
+free: four things to check before you buy ads
+
+# The thing everyone does and nobody says out loud:
+my RLS was off and a stranger sent me a screenshot
+the AI wrote the schema, the policy and the bug
+I gave the agent my prod key and it committed it
+my CORS says * and I keep telling myself it's fine
+one curl request and I was admin of my own app
+my .env sat in the repo for six days
+I copied my privacy policy and kept another company's name
+my privacy policy lists a tool I deleted in March
+POV: you ship tonight and someone opens the console
+the feature I was proudest of was the public one
+
+# --- earlier data-backed bank, kept for A/B -------------------
+# What the account actually rewarded: your top Nov Reel (skip 54%, 66%
+# watch-through) was a POV confession about a 3am bug. Your worst three were the
+# same "Non-technical founder building an app with Lovable or Bolt?" caption
+# repeated, at 80-91% skip. Every Nov caption still opened with the product and
+# the account earned 1 comment, 1 save and 2 shares in 1587 views.
+#
+# So: specific moment, second person or first person, one concrete detail, no
+# product name, no "try for free". 8-10s of footage, not 20.
+me at 3am finding out the bug wasn't the bug and my users table was public
+POV: the app works, the users are real, and the database answers strangers
+someone typed my url and my users' GPS coordinates came back
+six weeks to find a bug that took four minutes to go looking for
+shipped it in a weekend and left the door open until Monday
+my cofounder said we'd do security after launch and the internet disagreed
+me reading a stranger's email address out of my own public endpoint
+nobody told me "row level security off" was the default and not a bug
+POV: you thought "auth" meant protected and it only meant logged in
+the demo went great and the anon key was in the bundle the whole time
+worst review I ever got was a screenshot of my own data

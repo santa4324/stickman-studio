@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stickman Studio</title>
+<style>
+  :root {
+    --ink: #14161c; --paper: #fdfdfc; --line: #e2e0da;
+    --muted: #6b6f7a; --accent: #2f6f4f; --warn: #b4453a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: #f4f3ef; color: var(--ink);
+    font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  header {
+    padding: 22px 28px 18px; border-bottom: 1px solid var(--line);
+    background: var(--paper); display: flex; align-items: baseline; gap: 14px;
+    flex-wrap: wrap;
+  }
+  h1 { font-size: 18px; margin: 0; letter-spacing: -.01em; }
+  header span { color: var(--muted); font-size: 13px; }
+  main {
+    display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(320px, .85fr);
+    gap: 24px; padding: 24px 28px 40px; max-width: 1400px; margin: 0 auto;
+  }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+  section { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 18px; }
+  label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 8px; }
+  textarea {
+    width: 100%; min-height: 300px; resize: vertical; padding: 14px;
+    border: 1px solid var(--line); border-radius: 10px; background: #fff;
+    font: 15px/1.7 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--ink);
+  }
+  textarea:focus { outline: 2px solid #cfdcd4; border-color: var(--accent); }
+  .row { display: flex; align-items: center; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+  button {
+    font: inherit; font-weight: 600; padding: 11px 20px; border-radius: 9px;
+    border: 1px solid var(--accent); background: var(--accent); color: #fff; cursor: pointer;
+  }
+  button:disabled { opacity: .5; cursor: progress; }
+  button.ghost { background: transparent; color: var(--accent); }
+  .hint { color: var(--muted); font-size: 13px; }
+  .status { margin-top: 14px; font-size: 14px; min-height: 22px; }
+  .status.error { color: var(--warn); }
+  .bar { height: 4px; background: var(--line); border-radius: 4px; overflow: hidden; margin-top: 10px; }
+  .bar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .5s ease; }
+  video { width: 100%; border-radius: 10px; background: #000; display: block; }
+  .meta { color: var(--muted); font-size: 13px; margin-top: 10px; display: flex; gap: 14px; flex-wrap: wrap; }
+  a { color: var(--accent); }
+  ul { list-style: none; padding: 0; margin: 14px 0 0; }
+  li { border-top: 1px solid var(--line); padding: 10px 0; font-size: 14px; }
+  li button { border: 0; background: none; color: var(--ink); padding: 0; text-align: left; font-weight: 500; cursor: pointer; }
+  li small { display: block; color: var(--muted); }
+  .empty { color: var(--muted); font-size: 14px; margin-top: 14px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Stickman Studio</h1>
+  <span>localhost · nothing leaves this machine</span>
+</header>
+
+<main>
+  <section>
+    <label for="script">Script — one sentence becomes one scene</label>
+    <textarea id="script" spellcheck="false">Your AI wrote the whole app in a weekend.
+It also wrote the security holes.
+Nine in ten vibe-coded apps ship with one.
+StackShield reads your Supabase tables.
+It finds the ones with no lock.
+It sweeps GitHub for keys you left in public.
+Then it hands you the fix, and you decide.
+Free scan at stackshield.org</textarea>
+    <div class="row">
+      <button id="go">Render video</button>
+      <button id="example" class="ghost">Load example</button>
+      <span class="hint" id="estimate"></span>
+    </div>
+    <div class="bar"><i id="fill"></i></div>
+    <div class="status" id="status"></div>
+  </section>
+
+  <section>
+    <label>Latest film</label>
+    <div id="player">
+      <div class="empty" id="placeholder">Your render appears here. It takes about a minute for a 15-second film.</div>
+    </div>
+    <ul id="recent"></ul>
+  </section>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const EXAMPLE = $('script').value;
+let active = null;
+let timer = null;
+
+function words() {
+  return $('script').value.split(/\s+/).filter(Boolean).length;
+}
+function estimate() {
+  const seconds = Math.max(3, Math.round(words() / 2.6));
+  $('estimate').textContent = `${words()} words · about ${seconds}s of narration`;
+}
+$('script').addEventListener('input', estimate);
+estimate();
+
+$('example').onclick = () => { $('script').value = EXAMPLE; estimate(); };
+
+$('go').onclick = async () => {
+  const script = $('script').value.trim();
+  if (script.length < 20) { setStatus('Write at least one full sentence.', true); return; }
+  $('go').disabled = true;
+  setStatus('queued…');
+  $('fill').style.width = '6%';
+  const response = await fetch('/api/render', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ script }),
+  });
+  const job = await response.json();
+  if (!response.ok) { setStatus(job.error || 'Render failed to start.', true); $('go').disabled = false; return; }
+  active = job.id;
+  poll();
+};
+
+function setStatus(text, error = false) {
+  const el = $('status');
+  el.textContent = text;
+  el.className = 'status' + (error ? ' error' : '');
+}
+
+async function poll() {
+  clearTimeout(timer);
+  if (!active) return;
+  const response = await fetch(`/api/jobs/${active}`);
+  const job = await response.json();
+  if (!job || !job.status) { timer = setTimeout(poll, 2000); return; }
+
+  if (job.status === 'queued' || job.status === 'running') {
+    setStatus(job.stage || 'working…');
+    $('fill').style.width = job.stage && job.stage.startsWith('render') ? '72%' : '34%';
+    timer = setTimeout(poll, 1800);
+    return;
+  }
+  $('go').disabled = false;
+  if (job.status === 'failed') {
+    setStatus(job.error || 'Render failed.', true);
+    $('fill').style.width = '100%';
+    $('fill').style.background = 'var(--warn)';
+    return;
+  }
+  $('fill').style.width = '100%';
+  $('fill').style.background = 'var(--accent)';
+  setStatus('done');
+  show(job);
+  loadRecent();
+}
+
+function show(job) {
+  const film = job.film;
+  $('player').innerHTML = `
+    <video src="${film}" controls autoplay playsinline></video>
+    <div class="meta">
+      <span>${job.result.duration}s</span>
+      <span>${job.result.lines} scenes</span>
+      <span>720×1280</span>
+      <a href="${film}" download>download mp4</a>
+      <a href="${job.srt}" download>subtitles</a>
+    </div>`;
+}
+
+async function loadRecent() {
+  const jobs = await (await fetch('/api/jobs')).json();
+  const done = jobs.filter(j => j.status === 'done');
+  const list = $('recent');
+  list.innerHTML = done.length ? '' : '';
+  done.forEach(job => {
+    const li = document.createElement('li');
+    const button = document.createElement('button');
+    button.textContent = job.title || 'untitled';
+    const small = document.createElement('small');
+    small.textContent = `${job.created} · ${job.result.duration}s · ${job.result.scenes.join(', ')}`;
+    button.onclick = () => show(job);
+    li.append(button, small);
+    list.append(li);
+  });
+}
+
+loadRecent();
+</script>
+</body>
+</html>

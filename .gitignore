@@ -1,0 +1,15 @@
+.env
+data/
+__pycache__/
+*.pyc
+
+# agent skill runtimes
+.agents/skills/*/node_modules/
+
+# renders and heavy local assets
+out/
+.agents/skills/
+*.onnx
+*.onnx.json
+.DS_Store
+.claude/

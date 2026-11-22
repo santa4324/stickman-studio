@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "skills": {
+    "ffmpeg-skill": {
+      "source": "kajisho5/ffmpeg-skill",
+      "commit": "f487be1563464f7f206ed8f58e487bd66ce53337",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "5b598a4669ade395980e57282a829984b9fb1a4498d8a4304f53be8d60f5634e"
+    },
+    "humanizer": {
+      "source": "blader/humanizer",
+      "commit": "a32f24407364c74c812b43c15926d638bee1e072",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "6da5d71e32eb66770b4c1ebe38b7e5c271bfca6290c9248aeb8449a84dbfe914"
+    },
+    "last30days": {
+      "source": "mvanhorn/last30days-skill",
+      "commit": "64b1f006f800640022ce07f51de5ce56aad34b76",
+      "sourceType": "github",
+      "skillPath": "skills/last30days/SKILL.md",
+      "computedHash": "fa0844e0ba34badd868baa772d7a795fba78293d1b836dd1d35cfbf0134c6c92"
+    }
+  }
+}
