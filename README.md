@@ -206,6 +206,22 @@ How the script becomes a film, for when you want to steer it:
 - captions break at ~28 characters so they stay on one line at phone size
 
 Narration is local Piper (`data/voices/en_US-ryan-high.onnx`); the artwork is
+
+### Use it from your phone / another machine
+
+The render needs a real machine (ffmpeg, Piper, the Node canvas runtime), so it
+does not run on Vercel. Expose the local server through a tunnel instead:
+
+```bash
+brew install cloudflared
+python3 studio.py --no-browser &
+cloudflared tunnel --url http://127.0.0.1:8765
+```
+
+Cloudflare prints an `https://<random>.trycloudflare.com` URL that works on any
+device while your Mac is awake and the tunnel is up. The URL changes every time
+the tunnel restarts, and anyone with the link can open it — it is a public
+tunnel, not a login.
 drawn by `stickman_art.py`, and the render runs through the installed
 `directing-stickman-videos` skill in `.agents/skills/`.
 
